@@ -11,7 +11,7 @@ const faweibo = module.exports = async (username, password) => {
   const browser = await puppeteer.launch({
     headless: isProduction,
     slowMo: isProduction ? 0 : 100,
-    args: ['--incognito']
+    args: ['--incognito', '--no-sandbox', '--disable-setuid-sandbox']
   })
 
   const goto = async (page, url) => {
