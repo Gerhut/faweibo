@@ -1,61 +1,17 @@
 const assert = require('assert')
-const debug = require('debug')('faweibo')
-const puppeteer = require('puppeteer')
 const Koa = require('koa')
 const mount = require('koa-mount')
 const bodyparser = require('koa-bodyparser')
 
-const isProduction = process.env.NODE_ENV === 'production'
+const login = require('./login')
+const send = require('./send')
 
 const faweibo = module.exports = async (username, password) => {
-  const browser = await puppeteer.launch({
-    headless: isProduction,
-    slowMo: isProduction ? 0 : 100,
-    args: ['--incognito', '--no-sandbox', '--disable-setuid-sandbox']
-  })
-
-  const goto = async (page, url) => {
-    debug('Go to', url)
-    const response = await page.goto(url, {
-      waitUntil: 'networkidle0'
-    })
-    assert.equal(response.url(), url)
-    debug('Loaded', url)
-  }
-
-  const wait = async (page, url) => {
-    const response = await page.waitForNavigation({
-      waitUntil: 'domcontentloaded'
-    })
-    assert.equal(response.url(), url)
-  }
-
-  const page = await browser.newPage()
-  await goto(page, 'https://passport.weibo.cn/signin/login')
-  await page.waitForSelector('#loginName', {
-    visible: true
-  })
-  await page.type('#loginName', username)
-  await page.type('#loginPassword', password)
-  await page.click('#loginAction')
-  debug('Will Login')
-  await wait(page, 'https://m.weibo.cn/')
-  debug('Logged in')
-  await page.close()
+  const browser = login(username, password)
 
   return async context => {
     const content = context.request.body.content
-    const page = await browser.newPage()
-    await goto(page, 'https://m.weibo.cn/compose')
-    await page.waitForSelector('textarea', {
-      visible: true
-    })
-    await page.type('textarea', content)
-    await page.click('.m-send-btn')
-    debug('Will send', content)
-    await wait(page, 'https://m.weibo.cn/')
-    debug('Sent', content)
-    await page.close()
+    browser.then(browser => send(browser, content))
     context.status = 204
   }
 }
