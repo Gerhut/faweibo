@@ -1,0 +1,39 @@
+{
+  "name": "faweibo",
+  "version": "0.0.0",
+  "description": "发微博",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --require dotenv/config .",
+    "dev": "nodemon --require dotenv/config .",
+    "test": "standard"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gerhut/faweibo.git"
+  },
+  "keywords": [
+    "weibo"
+  ],
+  "author": "George Chung <Gerhut@GMail.com>",
+  "license": "Unlicense",
+  "bugs": {
+    "url": "https://github.com/Gerhut/faweibo/issues"
+  },
+  "homepage": "https://github.com/Gerhut/faweibo#readme",
+  "engines": {
+    "node": "^8.10.0"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "debug": "^4.1.0",
+    "dotenv": "^6.1.0",
+    "koa": "^2.5.3",
+    "koa-bodyparser": "^4.2.1",
+    "koa-router": "^7.4.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.4",
+    "standard": "^12.0.1"
+  }
+}
