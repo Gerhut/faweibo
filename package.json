@@ -4,8 +4,6 @@
   "description": "发微博",
   "main": "index.js",
   "scripts": {
-    "start": "node --require dotenv/config .",
-    "dev": "nodemon --require dotenv/config .",
     "test": "standard"
   },
   "repository": {
@@ -15,25 +13,26 @@
   "keywords": [
     "weibo"
   ],
-  "author": "George Chung <Gerhut@GMail.com>",
+  "files": [
+    "index.js"
+  ],
+  "author": "George Cheng <Gerhut@GMail.com>",
   "license": "Unlicense",
   "bugs": {
     "url": "https://github.com/Gerhut/faweibo/issues"
   },
   "homepage": "https://github.com/Gerhut/faweibo#readme",
   "engines": {
-    "node": "^8.10.0"
+    "node": "^10.13.0"
   },
   "dependencies": {
-    "debug": "^3.1.0",
-    "dotenv": "^5.0.1",
-    "koa": "^2.5.0",
-    "koa-bodyparser": "^4.2.0",
-    "koa-mount": "^3.0.0",
-    "puppeteer": "^1.1.1"
+    "debug": "^3.2.6"
   },
   "devDependencies": {
-    "nodemon": "^1.17.1",
-    "standard": "^11.0.0"
+    "puppeteer": "^1.20.0",
+    "standard": "^11.0.1"
+  },
+  "peerDependencies": {
+    "puppeteer": "^1.20.0"
   }
 }

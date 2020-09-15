@@ -1,38 +1,59 @@
-const assert = require('assert')
-const Koa = require('koa')
-const mount = require('koa-mount')
-const bodyparser = require('koa-bodyparser')
+/**
+ * 延迟返回内容
+ * @template T
+ * @param {number} ms 延迟毫秒数
+ * @param {T} [value] Promise 返回内容
+ * @returns {Promise<T>}
+ */
+function delay (ms, value) {
+  return new Promise(resolve => setTimeout(resolve, ms, value))
+}
 
-const login = require('./login')
-const send = require('./send')
+/**
+ * 发微博
+ * @param {import('puppeteer').Page} page Puppeteer 页面
+ * @param {string} username 用户名
+ * @param {string} password 密码
+ * @param {string} content 微博内容
+ * @param {string} [image] 图片路径
+ */
+module.exports = async function faweibo (page, username, password, content, image) {
+  await page.goto('https://weibo.cn/')
 
-const faweibo = module.exports = async (username, password) => {
-  const browser = login(username, password)
+  if (await page.$('[name="composer"]') === null) {
+    await Promise.all([
+      page.waitForNavigation(),
+      page.click('.ut a:first-child')
+    ])
+    await delay(1000)
 
-  return async context => {
-    const content = context.request.body.content
-    browser.then(browser => send(browser, content))
-    context.status = 204
+    await page.waitForSelector('#loginName')
+    await page.type('#loginName', username)
+    await page.type('#loginPassword', password)
+
+    await Promise.all([
+      page.waitForNavigation(),
+      page.click('#loginAction')
+    ])
   }
-}
 
-const main = async () => {
-  const username = process.env.WEIBO_USERNAME
-  const password = process.env.WEIBO_PASSWORD
+  await Promise.all([
+    page.waitForNavigation(),
+    page.click('[name="composer"]')
+  ])
 
-  assert(username, 'WEIBO_USERNAME environment variable is empty.')
-  assert(password, 'WEIBO_PASSWORD environment variable is empty.')
+  await page.type('[name="content"]', content)
 
-  const app = module.exports = new Koa()
-  app.use(bodyparser())
-  app.use(mount('/' + (process.env.URL_PREFIX || ''), await faweibo(username, password)))
+  if (image !== undefined) {
+    const [fileChooser] = await Promise.all([
+      page.waitForFileChooser(),
+      page.click('[name="pic"]')
+    ])
+    await fileChooser.accept([image])
+  }
 
-  app.listen(process.env.PORT)
-}
-
-if (require.main === module) {
-  main().catch(error => {
-    console.error(error)
-    process.exit(1)
-  })
+  await Promise.all([
+    page.waitForNavigation(),
+    page.click('[value="发布"]')
+  ])
 }

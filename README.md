@@ -2,21 +2,22 @@
 
 发微博
 
-# Usage
+## Install
 
-配置环境变量（有 dotenv）
+```shell
+npm install faweibo puppeteer
+```
 
-- `PORT` 端口号
-- `WEIBO_USERNAME` 微博用户名
-- `WEIBO_PASSWORD` 微博密码
-- `URL_PREFIX` 可选，URL 前缀
+## Usage
 
-    POST /{{URL_PREFIX}} HTTP/1.1
+```JavaScript
+puppeteer.launch().then(browser => {
+    return browser.newPage()
+}).then(page => {
+    return faweibo(page, username, password, content, image)
+})
+```
 
-    Content-Type: application/json
-
-    { "content": "泰斯特" }
-
-# License
+## License
 
 [The Unlicense](http://unlicense.org)
